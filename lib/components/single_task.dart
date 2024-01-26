@@ -3,9 +3,12 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 
 class SingleTask extends StatelessWidget {
-  final String categoryName;
+  final Map<String, dynamic> task;
+  final String status;
+  final Function deleteTask;
+  final Function markAsCompleted;
 
-  SingleTask(this.categoryName);
+  SingleTask(this.task, this.status, this.deleteTask, this.markAsCompleted);
 
   @override
   Widget build(BuildContext context) {
@@ -13,18 +16,26 @@ class SingleTask extends StatelessWidget {
       leading: Container(
         padding: EdgeInsets.all(5),
         decoration: BoxDecoration(
-          color: categoryName == "education"
+          color: task['category_name'] == "education"
               ? Colors.green[100]
-              : Colors.orange[100],
+              : task['category_name'] == "home"
+                  ? Colors.blue[100]
+                  : Colors.orange[100],
           border: Border.all(
-            color: categoryName == "education" ? Colors.green : Colors.orange,
+            color: task['category_name'] == "education"
+                ? Colors.green
+                : task['category_name'] == "home"
+                    ? Colors.blue
+                    : Colors.orange,
             width: 2,
           ),
           borderRadius: BorderRadius.circular(360),
         ),
-        child: categoryName == "education"
+        child: task['category_name'] == "education"
             ? Icon(Icons.school, color: Colors.green, size: 30)
-            : Icon(Icons.shopping_cart, color: Colors.orange, size: 30),
+            : task['category_name'] == "home"
+                ? Icon(Icons.home, color: Colors.blue, size: 30)
+                : Icon(Icons.shopping_cart, color: Colors.orange, size: 30),
       ),
       trailing: PopupMenuButton<String>(
         onSelected: (value) {
@@ -32,9 +43,9 @@ class SingleTask extends StatelessWidget {
           if (value == 'view') {
             // log clicked on view
           } else if (value == 'delete') {
-            // Handle delete action
+            deleteTask();
           } else if (value == 'markAsCompleted') {
-            // Handle markAsCompleted action
+            markAsCompleted();
           }
         },
         itemBuilder: (BuildContext context) => [
@@ -59,12 +70,14 @@ class SingleTask extends StatelessWidget {
             ),
           ),
           PopupMenuItem<String>(
-            value: 'markAsCompleted',
+            value: "markAsCompleted",
             child: Row(
               children: [
                 Icon(Icons.check),
                 SizedBox(width: 8),
-                Text('Mark as Completed'),
+                Text(status == 'completed'
+                    ? 'Mark as UnCompleted'
+                    : 'Mark as Completed'),
               ],
             ),
           ),
@@ -72,13 +85,13 @@ class SingleTask extends StatelessWidget {
         icon: Icon(Icons.more_vert, color: Colors.grey),
       ),
       title: Text(
-        "Must Leave The Schools",
+        task['title'],
         style: TextStyle(
           fontWeight: FontWeight.bold,
         ),
       ),
       subtitle: Text(
-        "This is a sub titleThis is a sub titleThis is a sub titleThis is a sub titleThis is a sub titleThis is a sub titleThis is a sub titleThis is a sub titleThis is a sub title",
+        task['description'],
         maxLines: 2,
         overflow: TextOverflow.ellipsis,
       ),
