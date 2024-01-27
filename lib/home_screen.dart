@@ -72,6 +72,20 @@ class _HomeScreenState extends State<HomeScreen> {
     }
   ];
 
+  bool isLoading = true;
+
+  void loadData() async {
+    await Future.delayed(Duration(seconds: 3));
+    setState(() {
+      isLoading = false;
+    });
+  }
+
+  void initState() {
+    super.initState();
+    loadData();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -83,7 +97,11 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
       body: Padding(
         padding: EdgeInsets.all(8),
-        child: ListView(
+        child: isLoading == true
+            ? Center(
+                child: CircularProgressIndicator(),
+              )
+            : ListView(
           children: [
             TextTitle("UnCompleted Tasks"),
             Container(
