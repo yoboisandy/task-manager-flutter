@@ -102,78 +102,100 @@ class _HomeScreenState extends State<HomeScreen> {
                 child: CircularProgressIndicator(),
               )
             : ListView(
-          children: [
-            TextTitle("UnCompleted Tasks"),
-            Container(
-              padding: EdgeInsets.symmetric(
-                horizontal: 16,
-                vertical: 8,
+                children: [
+                  TextTitle("UnCompleted Tasks"),
+                  Container(
+                    padding: EdgeInsets.symmetric(
+                      horizontal: 16,
+                      vertical: 8,
+                    ),
+                    decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(8),
+                        color: Colors.purple[50]),
+                    child: unCompletedTasks.length == 0
+                        ? Center(
+                            child: Text("No Tasks Found"),
+                          )
+                        : Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                                for (var i = 0;
+                                    i < unCompletedTasks.length;
+                                    i++)
+                                  Column(
+                                    children: [
+                                      SingleTask(
+                                          unCompletedTasks[i], "uncompleted",
+                                          () {
+                                        setState(() {
+                                          unCompletedTasks.removeAt(i);
+                                        });
+                                      }, () {
+                                        setState(() {
+                                          completedTasks
+                                              .add(unCompletedTasks[i]);
+                                          unCompletedTasks.removeAt(i);
+                                        });
+                                      }),
+                                      Divider(),
+                                    ],
+                                  ),
+                              ]),
+                  ),
+                  SizedBox(height: 8),
+                  TextTitle("Completed Tasks"),
+                  Container(
+                    padding: EdgeInsets.symmetric(
+                      horizontal: 16,
+                      vertical: 8,
+                    ),
+                    decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(8),
+                        color: Colors.purple[50]),
+                    child: completedTasks.length == 0
+                        ? Center(
+                            child: Text("No Tasks Found"),
+                          )
+                        : Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                                for (var i = 0; i < completedTasks.length; i++)
+                                  Column(
+                                    children: [
+                                      SingleTask(completedTasks[i], "completed",
+                                          () {
+                                        setState(() {
+                                          unCompletedTasks.removeAt(i);
+                                        });
+                                      }, () {
+                                        setState(() {
+                                          unCompletedTasks
+                                              .add(completedTasks[i]);
+                                          completedTasks.removeAt(i);
+                                        });
+                                      }),
+                                      Divider(),
+                                    ],
+                                  ),
+                              ]),
+                  ),
+                ],
               ),
-              decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(8),
-                  color: Colors.purple[50]),
-              child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    for (var i = 0; i < unCompletedTasks.length; i++)
-                      Column(
-                        children: [
-                          SingleTask(unCompletedTasks[i], "uncompleted", () {
-                            setState(() {
-                              unCompletedTasks.removeAt(i);
-                            });
-                          }, () {
-                            setState(() {
-                              completedTasks.add(unCompletedTasks[i]);
-                              unCompletedTasks.removeAt(i);
-                            });
-                          }),
-                          Divider(),
-                        ],
-                      ),
-                  ]),
-            ),
-            SizedBox(height: 8),
-            TextTitle("Completed Tasks"),
-            Container(
-              padding: EdgeInsets.symmetric(
-                horizontal: 16,
-                vertical: 8,
-              ),
-              decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(8),
-                  color: Colors.purple[50]),
-              child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    for (var i = 0; i < completedTasks.length; i++)
-                      Column(
-                        children: [
-                          SingleTask(completedTasks[i], "completed", () {
-                            setState(() {
-                              unCompletedTasks.removeAt(i);
-                            });
-                          }, () {
-                            setState(() {
-                              unCompletedTasks.add(completedTasks[i]);
-                              completedTasks.removeAt(i);
-                            });
-                          }),
-                          Divider(),
-                        ],
-                      ),
-                  ]),
-            ),
-          ],
-        ),
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          Navigator.push(
+        onPressed: () async {
+          var returnValue = await Navigator.push(
               context,
               MaterialPageRoute(
                 builder: (_) => AddTaskScreen(),
               ));
+
+          if (returnValue != null) {
+            print("return value: $returnValue");
+            setState(() {
+              unCompletedTasks.add(returnValue);
+            });
+          }
         },
         child: const Icon(Icons.add, color: Colors.white),
         backgroundColor: Colors.purple,

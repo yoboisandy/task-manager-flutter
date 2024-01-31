@@ -9,16 +9,16 @@ class AddTaskScreen extends StatefulWidget {
 
 class _AddTaskScreenState extends State<AddTaskScreen> {
   late TextEditingController title;
-  late TextEditingController description;
   late TextEditingController date;
   late TextEditingController time;
   late TextEditingController category;
   late TextEditingController note;
 
+  String categoryName = "education";
+
   @override
   void initState() {
     title = TextEditingController();
-    description = TextEditingController();
     date = TextEditingController();
     time = TextEditingController();
     category = TextEditingController();
@@ -64,27 +64,57 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
                 formLabel("Category Name"),
                 Row(
                   children: [
-                    Chip(
-                      label: Text(
-                        "Education",
-                        style: TextStyle(color: Colors.white),
+                    GestureDetector(
+                      child: Chip(
+                        label: Text(
+                          "Education",
+                          style: this.categoryName == "education"
+                              ? TextStyle(color: Colors.white)
+                              : null,
+                        ),
+                        backgroundColor: this.categoryName == "education"
+                            ? Colors.purple
+                            : null,
                       ),
-                      backgroundColor: Colors.purple,
+                      onTap: () => setState(() {
+                        categoryName = "education";
+                      }),
                     ),
                     SizedBox(
                       width: 8,
                     ),
-                    Chip(
-                      label: Text(
-                        "Work",
+                    GestureDetector(
+                      onTap: () => setState(() {
+                        categoryName = "market";
+                      }),
+                      child: Chip(
+                        label: Text(
+                          "Market",
+                          style: this.categoryName == "market"
+                              ? TextStyle(color: Colors.white)
+                              : null,
+                        ),
+                        backgroundColor: this.categoryName == "market"
+                            ? Colors.purple
+                            : null,
                       ),
                     ),
                     SizedBox(
                       width: 8,
                     ),
-                    Chip(
-                      label: Text(
-                        "Home",
+                    GestureDetector(
+                      onTap: () => setState(() {
+                        categoryName = "home";
+                      }),
+                      child: Chip(
+                        label: Text(
+                          "Home",
+                          style: this.categoryName == "home"
+                              ? TextStyle(color: Colors.white)
+                              : null,
+                        ),
+                        backgroundColor:
+                            this.categoryName == "home" ? Colors.purple : null,
                       ),
                     ),
                   ],
@@ -165,15 +195,22 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
                   width: double.maxFinite,
                   child: ElevatedButton(
                     onPressed: () {
-                      formKey.currentState!.validate();
-                      print({
-                        "title": title.text,
-                        "description": description.text,
-                        "date": date.text,
-                        "time": time.text,
-                        "category": category.text,
-                        "note": note.text,
-                      });
+                      bool valid = formKey.currentState!.validate();
+                      if (valid) {
+                        var title = this.title.text.trim();
+                        var date = this.date.text.trim();
+                        var time = this.time.text.trim();
+                        var category = this.categoryName;
+                        var note = this.note.text.trim();
+                        Map<String, dynamic> data = {
+                          "title": title,
+                          "description": note,
+                          "category_name": category,
+                        };
+                        Navigator.pop(context, data);
+                      } else {
+                        print("Form is Invalid");
+                      }
                     },
                     child: Text(
                       "Save Task",
